@@ -28,9 +28,9 @@ public class TicTacToe
         frame.setLayout(new BorderLayout());
 
         textLabel.setBackground(Color.DARK_GRAY);
-        textLabel.setForeground(Color.white);
-        textLabel.setFont(new Font("Arial", Font.BOLD, 50));
-        textLabel.setHorizontalAlignment(JLabel.CENTER);
+        textLabel.setForeground(Color.yellow);
+        textLabel.setFont(new Font("Console", Font.BOLD, 50));
+        textLabel.setHorizontalAlignment(JLabel.CENTER); 
         textLabel.setText("Tic-Tac-Toe");
         textLabel.setOpaque(true);
 
@@ -47,6 +47,28 @@ public class TicTacToe
                 JButton tile = new JButton();
                 board[r][c] = tile;
                 boardPanel.add(tile);
+
+                tile.setBackground(Color.GRAY);
+                tile.setForeground(Color.WHITE);
+                tile.setFont(new Font("Arial", Font.BOLD, 121));
+                tile.setFocusable(false);
+                //tile.setText(currentPlayer);
+
+                tile.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        JButton tile = (JButton) e.getSource();
+                        if (tile.getText()  == "")
+                        {
+                        tile.setText(currentPlayer);
+
+                        currentPlayer = currentPlayer == playerX ? playerO : playerX;
+                        textLabel.setText(currentPlayer + "'s turn");
+                        }
+
+                    }
+                });
             }
         }
 
