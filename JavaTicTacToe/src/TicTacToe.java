@@ -17,14 +17,13 @@ public class TicTacToe {
     ImageIcon iconO;
     ImageIcon iconWin;
     ImageIcon iconTie;
-    
     String currentPlayer = "X";
     boolean gameOver = false;
     int turns = 0;
 
     public TicTacToe() {
         //load images
-        iconX = new ImageIcon("lib/blue.png");
+        iconX = new ImageIcon("lib/bluecup.png");
         iconO = new ImageIcon("lib/redcup.png");
         iconWin = new ImageIcon("lib/greencup.png");
         iconTie = new ImageIcon("lib/orangecup.png");
@@ -197,8 +196,6 @@ public class TicTacToe {
         }
     }
     
-
-
 
         void setWinner(JButton tile){
             tile.setForeground(Color.green);
