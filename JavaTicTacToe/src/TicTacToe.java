@@ -12,6 +12,9 @@ public class TicTacToe {
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
     JPanel playersPanel = new JPanel();
+    JPanel scorePanel =new JPanel();
+    JLabel player1ScoreLabel;
+    JLabel player2ScoreLabel;
 
     JButton[][] board = new JButton[3][3];
     ImageIcon iconX;
@@ -22,11 +25,13 @@ public class TicTacToe {
     boolean gameOver = false;
     int turns = 0;
 
-    // fields for player name
+    // fields for player names and score
     JTextField player1Field;
     JTextField player2Field;
     String player1Name="";
     String player2Name="";
+    int player1Score = 0;
+    int player2Score = 0;
     
     public TicTacToe() {
         //load images
@@ -45,7 +50,7 @@ public class TicTacToe {
 
         //set up textLabel
         textLabel.setBackground(Color.DARK_GRAY);
-        textLabel.setForeground(Color.yellow);
+        textLabel.setForeground(Color.YELLOW);
         textLabel.setFont(new Font("Arial", Font.BOLD, 24 ));
         textLabel.setHorizontalAlignment(JLabel.CENTER); 
         textLabel.setText("Java-Tic-Tac-Toe");
@@ -61,20 +66,20 @@ public class TicTacToe {
         playersPanel.setBackground(Color.CYAN);
         
         JLabel player1Label = new JLabel("Player 1");
-        player1Field = new JTextField("Enter name",15);
-
+        player1Field = new JTextField("Enter name",10);
 
         JLabel player2Label = new JLabel("Player 2");
-        player2Field = new JTextField("Enter 2. name",15);
+        player2Field = new JTextField("Enter name",10);
 
         playersPanel.add(player1Label);
-        playersPanel.add(this.player1Field);
+        playersPanel.add(player1Field);
 
         playersPanel.add(player2Label);
-        playersPanel.add(this.player2Field);
+        playersPanel.add(player2Field);
 
         frame.add(playersPanel, BorderLayout.EAST);
 
+        // set up board panel
         boardPanel.setLayout(new GridLayout(3,3));
         boardPanel.setBackground(Color.gray);
         frame.add(boardPanel, BorderLayout.CENTER);
@@ -89,7 +94,7 @@ public class TicTacToe {
                 board[r][c] = tile;
                 boardPanel.add(tile);
 
-                tile.setBackground(Color.lightGray);
+                tile.setBackground(Color.LIGHT_GRAY);
                 tile.setForeground(Color.WHITE);
                 tile.setFont(tileFont);
                 tile.setFocusable(false);
@@ -117,20 +122,77 @@ public class TicTacToe {
             }
         }
         
-        this.player1Field.addActionListener(new ActionListener(){
+
+        player1Field.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                startGameIfReady();
+            }
+        });
+    
+
+        player2Field.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 startGameIfReady();
             }
         });
 
-        this.player2Field.addActionListener(new ActionListener() {
+
+        // set up score panel
+        scorePanel.setLayout(new GridLayout(2,2));
+        scorePanel.setBackground(Color.ORANGE);
+        player1ScoreLabel = new JLabel(player1Name + "" + " score: 0 ");
+        player2ScoreLabel = new JLabel(player2Name + "" + " socre: 0 ");
+        scorePanel.add(player1ScoreLabel);
+        scorePanel.add(player2ScoreLabel);
+        frame.add(scorePanel, BorderLayout.WEST);
+
+
+        // add restart button
+        JButton restartButton = new JButton("Restart game");
+        restartButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                startGameIfReady();
+                restartGame();
             }
         });
+
+        frame.add(restartButton, BorderLayout.SOUTH);
+
         frame.pack();
         frame.setVisible(true);
     }
+
+        void restartGame(){
+            if(player1Score >=5){
+                textLabel.setText(player1Name + " is the CHAMPION !");
+                textLabel.setForeground(Color.BLUE);
+                player1Score = 0;
+                player2Score = 0;
+                updateScoreLabels();
+            }else if(player2Score >= 5){
+                textLabel.setText(player2Name + " is the CHAMPION !");
+                textLabel.setForeground(Color.RED);
+                player1Score = 0;
+                player2Score = 0;
+                updateScoreLabels();
+            }
+
+            //reset board 
+            for (int r = 0; r<3; r++){
+                for (int c = 0; c<3; c++){
+                    board[r][c].setIcon(null);
+                    board[r][c].setBackground(Color.LIGHT_GRAY);
+                    board[r][c].setForeground(Color.WHITE);
+                    board[r][c].setEnabled(true);
+                }
+            }
+
+            // reset game state
+            turns = 0;
+            gameOver = false;
+            currentPlayer = "X";
+            updateTurnLabel();
+            textLabel.setForeground(Color.YELLOW);
+        }
 
         void updateTurnLabel(){
             if(currentPlayer.equals("X")){
@@ -144,6 +206,7 @@ public class TicTacToe {
             player1Name = player1Field.getText().trim();
             player2Name = player2Field.getText().trim();
             if (!player1Name.isEmpty() && !player2Name.isEmpty()) {
+                updateScoreLabels();
                 currentPlayer = "X"; // Start with player 1
                 updateTurnLabel();
             }
@@ -152,20 +215,18 @@ public class TicTacToe {
         void checkWinner(){
             // horizontal, rows
             for(int r = 0; r<3; r++){
-                if(board[r][0].getIcon() == null) 
-                    continue;
-                if (board[r][0].getIcon().equals(board[r][1].getIcon()) &&
-                    board[r][1].getIcon().equals(board[r][2].getIcon())){
-                    annouanceWinner(board[r][0].getIcon());
-                    return;
+                if(board[r][0].getIcon() != null &&
+                   board[r][0].getIcon().equals(board[r][1].getIcon()) &&
+                   board[r][1].getIcon().equals(board[r][2].getIcon())){
+                   annouanceWinner(board[r][0].getIcon());
+                   return;
                 }
             }
 
             //vertical, columns
             for(int c = 0; c < 3; c++){
-                if(board[0][c].getIcon() == null)
-                    continue;
-                if(board[0][c].getIcon().equals(board[1][c].getIcon()) &&
+                if(board[0][c].getIcon() != null &&
+                   board[0][c].getIcon().equals(board[1][c].getIcon()) &&
                    board[1][c].getIcon().equals(board[2][c].getIcon())) {
                    annouanceWinner(board[0][c].getIcon());
                    return;
@@ -199,22 +260,50 @@ public class TicTacToe {
                 gameOver= true;
             }
         }
+        
             
         void annouanceWinner(Icon winningIcon) {
-            String winner;
-            if (winningIcon == iconX){
-                winner = player1Name;
+            String winner = (winningIcon.equals(iconX)) ? player1Name : player2Name;
+            if (winningIcon.equals(iconX)){
+                player1Score++;
             }else{
-                winner = player2Name;
+                player2Score++;
             }
 
-            textLabel.setText("Player " + winner + " wins!");
-            textLabel.setForeground(Color.green); //text color
-            currentPlayer = winner;
-            gameOver = true;
+            updateScoreLabels();
+
+            if (gameOver){
+                for (int r=0; r<3; r++){
+                    for(int c = 0; c<3; c++){
+                        board[r][c].setEnabled(false);
+                    }
+                }
+            }else{
+                highlightWinning(winningIcon);
+            }
+        }
+        
             
-            //Icon winningIcon = (currentPlayer.equals("Blue Cup"))? iconX : iconO;
+        void updateScoreLabels() {
+            player1ScoreLabel.setText(player1Name + " : " + player1Score);
+            player2ScoreLabel.setText(player2Name + " : " + player2Score);
+            //gameOver = true;
+    
+            //champion check
+            if (player1Score >= 5){
+                textLabel.setText(player1Name + " is the CHAMPION!");
+                textLabel.setForeground(Color.GREEN);
+                gameOver = true;
+            }else if(player2Score >= 5){
+                textLabel.setText(player2Name + " is the CHAMPION!");
+                textLabel.setForeground(Color.GREEN);
+                gameOver = true;
+            }
+        }
+
+            Icon winningIcon = (currentPlayer.equals("Blue Cup"))? iconX : iconO;
             // checking rows
+            void highlightWinning(Icon winningIcon){
             for (int r = 0; r < 3; r++) {
                 if (board[r][0].getIcon() != null &&
                     board[r][0].getIcon().equals(board[r][1].getIcon()) &&
@@ -264,8 +353,8 @@ public class TicTacToe {
                 return;
             }
         }
-    }
-    
+        
+        }
 
         void setWinner(JButton tile){
             tile.setForeground(Color.green);
@@ -279,9 +368,10 @@ public class TicTacToe {
             textLabel.setText("Tie game!");
             tile.setIcon(iconTie);
         }
-
-        
+    
 }
+
+
 
 
 
