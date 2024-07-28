@@ -4,7 +4,7 @@
 
 ## Getting started
 
-This game works without errors in Visual studio code!
+This game works without errors in Visual studio code! App is still in progress, so current version is on develop branch, not on main.
 
 
 ## Test and Deploy
